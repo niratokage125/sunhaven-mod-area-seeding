@@ -17,8 +17,6 @@ namespace AreaSeeding
         private static GameObject baseSelection;
         private static List<GameObject> selectionList;
 
-
-
         [HarmonyPatch("LateUpdate"), HarmonyPrefix]
         public static bool LateUpdate_Prefix(Seeds __instance)
         {

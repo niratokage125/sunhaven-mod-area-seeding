@@ -1,17 +1,18 @@
 # Sun Haven Mod - Area Seeding
 
-Plant seeds or destroy crops on every tile in the area with just one click.
+Plant seeds, fertilize, or destroy crops on every tile in the area with just one click.
 
 ## Overview
 
-This mod plants seeds (or destroys crops) in the specified area at once.
+This mod plants seeds, fertilizes, or destroys crops in the specified area at once.
 
-While holding down Left Ctrl key with seeds, the area for seeding becomes visible.
+While holding down Left Ctrl key with seeds or fertilizers, the area for action becomes visible.
 
 ## How to Use (Default)
 
-Seed: Left Ctrl + Left Click
-Destroy: Left Ctrl + Right Click
+Seed: Left Ctrl + Left Click with Seeds
+Fertilize (v1.0.1): Left Ctrl + Left Click with Fertilizers
+Destroy: Left Ctrl + Right Click with Seeds
 Increase Width: Left Ctrl + Right Arrow
 Decrease Width: Left Ctrl + Left Arrow
 Increase Height: Left Ctrl + Up Arrow
