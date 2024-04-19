@@ -35,7 +35,7 @@ namespace AreaSeeding
 
         private const string PluginGuid = "niratokage125.sunhaven.AreaSeeding";
         private const string PluginName = "AreaSeeding";
-        private const string PluginVer = "1.0.1";
+        private const string PluginVer = "1.0.2";
         private void Awake()
         {
             logger = Logger;

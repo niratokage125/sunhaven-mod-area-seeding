@@ -9,6 +9,91 @@ using static AreaSeeding.SeedsPatch;
 
 namespace AreaSeeding
 {
+    [HarmonyPatch(typeof(Selectable<Barn>))]
+    public static class SelectablePatchPlayerBarn
+    {
+        [HarmonyPatch("LateUpdate"), HarmonyReversePatch]
+        public static void LateUpdate(object instance)
+        {
+            IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var code = new List<CodeInstruction>(instructions);
+                return code;
+            }
+            _ = Transpiler(null);
+        }
+    }
+    [HarmonyPatch(typeof(Selectable<Bridge>))]
+    public static class SelectablePatchPlayerBridge
+    {
+        [HarmonyPatch("LateUpdate"), HarmonyReversePatch]
+        public static void LateUpdate(object instance)
+        {
+            IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var code = new List<CodeInstruction>(instructions);
+                return code;
+            }
+            _ = Transpiler(null);
+        }
+    }
+    [HarmonyPatch(typeof(Selectable<PlayerHouse>))]
+    public static class SelectablePatchPlayerHouse
+    {
+        [HarmonyPatch("LateUpdate"), HarmonyReversePatch]
+        public static void LateUpdate(object instance)
+        {
+            IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var code = new List<CodeInstruction>(instructions);
+                return code;
+            }
+            _ = Transpiler(null);
+        }
+    }
+    [HarmonyPatch(typeof(Selectable<Building>))]
+    public static class SelectablePatchBuilding
+    {
+        [HarmonyPatch("LateUpdate"), HarmonyReversePatch]
+        public static void LateUpdate(object instance)
+        {
+            IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var code = new List<CodeInstruction>(instructions);
+                return code;
+            }
+            _ = Transpiler(null);
+        }
+    }
+    [HarmonyPatch(typeof(Selectable<Mailbox>))]
+    public static class SelectablePatchMailbox
+    {
+        [HarmonyPatch("LateUpdate"), HarmonyReversePatch]
+        public static void LateUpdate(object instance)
+        {
+            IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var code = new List<CodeInstruction>(instructions);
+                return code;
+            }
+            _ = Transpiler(null);
+        }
+    }
+    [HarmonyPatch(typeof(Selectable<Shed>))]
+    public static class SelectablePatchShed
+    {
+        [HarmonyPatch("LateUpdate"), HarmonyReversePatch]
+        public static void LateUpdate(object instance)
+        {
+            IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var code = new List<CodeInstruction>(instructions);
+                return code;
+            }
+            _ = Transpiler(null);
+        }
+    }
+
     [HarmonyPatch(typeof(Selectable<Crop>))]
     public static class SelectablePatch
     {
@@ -16,19 +101,50 @@ namespace AreaSeeding
         private static List<GameObject> selectionList;
 
         [HarmonyPatch("LateUpdate"), HarmonyPrefix]
-        public static bool LateUpdate_Prefix(Selectable<Crop> __instance)
+        public static bool LateUpdate_Prefix(object __instance)
         {
             if (__instance is Fertilizer &&
                 Plugin.modEnabled.Value &&
                 Plugin.activeKey.Value.IsPressed())
             {
                 MyLateUpdate(__instance);
-                return false;
             }
             else
             {
                 selectionList?.ForEach(x => x.SetActive(false));
             }
+
+            if (__instance is Selectable<Barn>)
+            {
+                SelectablePatchPlayerBarn.LateUpdate(__instance);
+                return false;
+            }
+            else if (__instance is Selectable<Bridge>)
+            {
+                SelectablePatchPlayerBridge.LateUpdate(__instance);
+                return false;
+            }
+            else if (__instance is Selectable<PlayerHouse>)
+            {
+                SelectablePatchPlayerHouse.LateUpdate(__instance);
+                return false;
+            }
+            else if (__instance is Selectable<Mailbox>)
+            {
+                SelectablePatchMailbox.LateUpdate(__instance);
+                return false;
+            }
+            else if (__instance is Selectable<Shed>)
+            {
+                SelectablePatchShed.LateUpdate(__instance);
+                return false;
+            }
+            else if (__instance is Selectable<Building>)
+            {
+                SelectablePatchBuilding.LateUpdate(__instance);
+                return false;
+            }
+
             return true;
         }
         [HarmonyPatch("LateUpdate"), HarmonyReversePatch]
@@ -143,4 +259,6 @@ namespace AreaSeeding
             _ = Transpiler(null);
         }
     }
+
+
 }
