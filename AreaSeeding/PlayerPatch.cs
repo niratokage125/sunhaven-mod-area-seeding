@@ -35,7 +35,9 @@ namespace AreaSeeding
             }
             if (Plugin.rotateKey.Value.IsDown())
             {
-                (Plugin.width.Value, Plugin.height.Value) = (Plugin.height.Value, Plugin.width.Value);
+                var tmp = Plugin.width.Value;
+                Plugin.width.Value = Plugin.height.Value;
+                Plugin.height.Value = tmp;
             }
         }
     }

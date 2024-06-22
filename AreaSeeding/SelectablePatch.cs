@@ -108,11 +108,10 @@ namespace AreaSeeding
                 Plugin.activeKey.Value.IsPressed())
             {
                 MyLateUpdate(__instance);
+                return false;
             }
-            else
-            {
-                selectionList?.ForEach(x => x.SetActive(false));
-            }
+
+             selectionList?.ForEach(x => x.SetActive(false));
 
             if (__instance is Selectable<Barn>)
             {

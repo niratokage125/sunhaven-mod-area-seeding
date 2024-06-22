@@ -8,6 +8,8 @@ using UnityEngine;
 using Wish;
 using ZeroFormatter.DynamicObjectSegments.Wish;
 using Sirenix.OdinInspector;
+using System.Linq;
+using static AreaSeeding.SeedsPatch;
 
 namespace AreaSeeding
 {
@@ -205,8 +207,6 @@ namespace AreaSeeding
                     var p = new Vector2Int(pos.x + x, pos.y + y);
                     var prev = new Vector2Int(p.x + 1, p.y + 1);
                     SeedsPatch.MyUse1(new MyUse1Arg { _seedItem = _seedItem, pos = p, prevPos = prev, _crop = _crop, original = __instance });
-                    
-                    //SeedsPatch.MyUse1(__instance);
                 }
                 return false;
             }
@@ -227,46 +227,56 @@ namespace AreaSeeding
                 original.HoldAnimation();
             }
         }
+
+        public static IEnumerable<CodeInstruction> MyUse1TransPiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var code = new List<CodeInstruction>(instructions);
+
+            for (int i = 0; i < code.Count; i++)
+            {
+                if (code[i].OperandIs(AccessTools.PropertyGetter(typeof(Seeds), "SeedItem")))
+                {
+                    code[i].operand = AccessTools.PropertyGetter(typeof(MyUse1Arg), nameof(MyUse1Arg.SeedItem));
+                }
+                else if (code[i].OperandIs(AccessTools.Field(typeof(Seeds), "pos")))
+                {
+                    code[i].operand = AccessTools.Field(typeof(MyUse1Arg), nameof(MyUse1Arg.pos));
+                }
+                else if (code[i].OperandIs(AccessTools.Field(typeof(Seeds), "prevPos")))
+                {
+                    code[i].operand = AccessTools.Field(typeof(MyUse1Arg), nameof(MyUse1Arg.prevPos));
+                }
+                else if (code[i].OperandIs(AccessTools.Field(typeof(Seeds), "_crop")))
+                {
+                    code[i].operand = AccessTools.Field(typeof(MyUse1Arg), nameof(MyUse1Arg._crop));
+                }
+                else if (code[i].OperandIs(AccessTools.PropertyGetter(typeof(Component), nameof(Component.transform))))
+                {
+                    code[i].operand = AccessTools.PropertyGetter(typeof(MyUse1Arg), nameof(MyUse1Arg.transform));
+                }
+                else if (code[i].OperandIs(AccessTools.Method(typeof(Seeds), nameof(Seeds.HoldAnimation))))
+                {
+                    code[i].operand = AccessTools.Method(typeof(MyUse1Arg), nameof(MyUse1Arg.HoldAnimation));
+                }
+                else if (code[i].OperandIs(AccessTools.Method(typeof(AudioManager), nameof(AudioManager.PlayAudio), new[] { typeof(AudioClip), typeof(float), typeof(float) })))
+                {
+                    code[i].operand = AccessTools.Method(typeof(SeedsPatch), nameof(MyPlayAudio));
+                }
+                else if (code[i].OperandIs(SeedsPatchMyUse1.TargetMethod()))
+                {
+                    code[i].operand = AccessTools.Method(typeof(SeedsPatchMyUse1), nameof(SeedsPatchMyUse1.MyAction));
+                }
+            }
+
+            return code;
+        }
+
         [HarmonyPatch("Use1"), HarmonyReversePatch]
         public static void MyUse1(object instance)
         {
             IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                var code = new List<CodeInstruction>(instructions);
-
-                for (int i = 0; i < code.Count; i++)
-                {
-                    if (code[i].OperandIs(AccessTools.PropertyGetter(typeof(Seeds), "SeedItem")))
-                    {
-                        code[i].operand = AccessTools.PropertyGetter(typeof(MyUse1Arg), nameof(MyUse1Arg.SeedItem));
-                    }
-                    else if (code[i].OperandIs(AccessTools.Field(typeof(Seeds), "pos")))
-                    {
-                        code[i].operand = AccessTools.Field(typeof(MyUse1Arg), nameof(MyUse1Arg.pos));
-                    }
-                    else if (code[i].OperandIs(AccessTools.Field(typeof(Seeds), "prevPos")))
-                    {
-                        code[i].operand = AccessTools.Field(typeof(MyUse1Arg), nameof(MyUse1Arg.prevPos));
-                    }
-                    else if (code[i].OperandIs(AccessTools.Field(typeof(Seeds), "_crop")))
-                    {
-                        code[i].operand = AccessTools.Field(typeof(MyUse1Arg), nameof(MyUse1Arg._crop));
-                    }
-                    else if (code[i].OperandIs(AccessTools.PropertyGetter(typeof(Component), nameof(Component.transform))))
-                    {
-                        code[i].operand = AccessTools.PropertyGetter(typeof(MyUse1Arg), nameof(MyUse1Arg.transform));
-                    }
-                    else if (code[i].OperandIs(AccessTools.Method(typeof(Seeds), nameof(Seeds.HoldAnimation))))
-                    {
-                        code[i].operand = AccessTools.Method(typeof(MyUse1Arg), nameof(MyUse1Arg.HoldAnimation));
-                    }
-                    else if (code[i].OperandIs(AccessTools.Method(typeof(AudioManager), nameof(AudioManager.PlayAudio), new[] { typeof(AudioClip), typeof(float), typeof(float)})))
-                    {
-                        code[i].operand = AccessTools.Method(typeof(SeedsPatch), nameof(MyPlayAudio));
-                    }
-                }
-
-                return code;
+                return MyUse1TransPiler(instructions);
             }
             _ = Transpiler(null);
         }
@@ -277,7 +287,25 @@ namespace AreaSeeding
                 return;
             }
             Plugin.playAudio = false;
-            AudioManager.Instance.PlayAudio(clip,volume,delay);
+            AudioManager.Instance.PlayAudio(clip, volume, delay);
         }
     }
+    [HarmonyPatch()]
+    public static class SeedsPatchMyUse1
+    {
+        public static MethodInfo TargetMethod()
+        {
+            return AccessTools.Method(typeof(Seeds).Assembly.GetType("Wish.Seeds+<>c__DisplayClass12_0"), "<Use1>b__0");
+        }
+        [HarmonyReversePatch]
+        public static void MyAction(object instance, object arg)
+        {
+            IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                return SeedsPatch.MyUse1TransPiler(instructions);
+            }
+            _ = Transpiler(null);
+        }
+    }
+
 }
